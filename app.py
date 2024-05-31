@@ -87,6 +87,7 @@ if st.button("Start Search"):
     else:
         st.error("Please fill in all the fields.")
 
+
             
             # Save results to Excel
             save_to_excel(analysis_results, "analysis_results.xlsx")
