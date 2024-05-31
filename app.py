@@ -41,7 +41,7 @@ def analyze_with_diffbot(urls, diffbot_token):
     return results
 
 # Function to convert Diffbot JSON to CSV
-def convert_json_to_csv(json_data, filename):
+def convert_json_to_csv(json_data):
     # Extract relevant information from JSON
     data_to_save = []
     for item in json_data:
@@ -53,13 +53,9 @@ def convert_json_to_csv(json_data, filename):
             flat_data = flatten_json(item)
             data_to_save.append(flat_data)
 
-    # Convert to DataFrame and save as CSV
+    # Convert to DataFrame
     df = pd.DataFrame(data_to_save)
-    try:
-        df.to_csv(filename, index=False)
-        st.success(f"Data saved to {filename}")
-    except Exception as e:
-        st.error(f"Error saving to CSV: {e}")
+    return df
 
 # Helper function to flatten JSON
 def flatten_json(y):
@@ -117,9 +113,19 @@ if st.button("Start Search"):
             st.json(analysis_results)
             
             # Convert JSON to CSV
-            convert_json_to_csv(analysis_results, "analysis_results.csv")
+            df = convert_json_to_csv(analysis_results)
+            csv_data = df.to_csv(index=False).encode('utf-8')
+
+            # Provide download button
+            st.download_button(
+                label="Download data as CSV",
+                data=csv_data,
+                file_name='analysis_results.csv',
+                mime='text/csv',
+            )
     else:
         st.error("Please fill in all the fields.")
+
 
     
   
