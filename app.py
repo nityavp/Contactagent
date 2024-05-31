@@ -28,7 +28,7 @@ def serper_search(query, api_key):
 def analyze_with_diffbot(urls, diffbot_token):
     results = []
     for i, url in enumerate(urls):
-        if i > 0 and i % 4 == 0:
+        if i > 0 and i % 2 == 0:
             st.write("Waiting for 15 seconds to comply with rate limit...")
             time.sleep(15)
         
