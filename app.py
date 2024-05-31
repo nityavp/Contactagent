@@ -77,7 +77,7 @@ def flatten_json(y):
     return out
 
 # Streamlit app
-st.title("Custom Search and Analysis App")
+st.title("Google Contact grabber Agent")
 
 # User inputs
 base_url = st.text_input("Enter the base URL (e.g., graphy.com)")
