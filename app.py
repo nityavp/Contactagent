@@ -40,11 +40,45 @@ def analyze_with_diffbot(urls, diffbot_token):
             st.error(f"Diffbot Error: {response.status_code}")
     return results
 
-# Function to save results to Excel
-def save_to_excel(data, filename):
-    df = pd.DataFrame(data)
-    df.to_excel(filename, index=False)
-    st.success(f"Data saved to {filename}")
+# Function to convert Diffbot JSON to CSV
+def convert_json_to_csv(json_data, filename):
+    # Extract relevant information from JSON
+    data_to_save = []
+    for item in json_data:
+        if 'objects' in item:
+            for obj in item['objects']:
+                flat_data = flatten_json(obj)
+                data_to_save.append(flat_data)
+        else:
+            flat_data = flatten_json(item)
+            data_to_save.append(flat_data)
+
+    # Convert to DataFrame and save as CSV
+    df = pd.DataFrame(data_to_save)
+    try:
+        df.to_csv(filename, index=False)
+        st.success(f"Data saved to {filename}")
+    except Exception as e:
+        st.error(f"Error saving to CSV: {e}")
+
+# Helper function to flatten JSON
+def flatten_json(y):
+    out = {}
+
+    def flatten(x, name=''):
+        if type(x) is dict:
+            for a in x:
+                flatten(x[a], name + a + '_')
+        elif type(x) is list:
+            i = 0
+            for a in x:
+                flatten(a, name + str(i) + '_')
+                i += 1
+        else:
+            out[name[:-1]] = x
+
+    flatten(y)
+    return out
 
 # Streamlit app
 st.title("Custom Search and Analysis App")
@@ -82,9 +116,10 @@ if st.button("Start Search"):
             st.write("Analysis Results:")
             st.json(analysis_results)
             
-            # Save results to Excel
-            save_to_excel(analysis_results, "analysis_results.xlsx")
+            # Convert JSON to CSV
+            convert_json_to_csv(analysis_results, "analysis_results.csv")
     else:
         st.error("Please fill in all the fields.")
+
     
   
